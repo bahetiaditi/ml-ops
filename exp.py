@@ -55,6 +55,7 @@ shuffle=False)
 ##############################################################################
 def predict_and_eval(model, X_test, y_test):
     # Getting model predictions on the test set
+    global predicted_test
     predicted_test = model.predict(X_test)
 
     # Evaluate the model on the test set
@@ -111,7 +112,7 @@ for ax, image, prediction in zip(axes, X_test, predicted_test):
 
 print(
     f"Classification report for classifier {clf}:\n"
-    f"{metrics.classification_report(y_test, predicted)}\n"
+    f"{metrics.classification_report(y_test, predicted_test)}\n"
 )
 
 ###############################################################################
