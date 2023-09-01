@@ -99,7 +99,7 @@ classification_report, confusion_matrix = predict_and_eval(clf, X_test, y_test)
 # digit value in the title.
 
 _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
-for ax, image, prediction in zip(axes, X_test, predicted):
+for ax, image, prediction in zip(axes, X_test, predicted_test):
     ax.set_axis_off()
     image = image.reshape(8, 8)
     ax.imshow(image, cmap=plt.cm.gray_r, interpolation="nearest")
