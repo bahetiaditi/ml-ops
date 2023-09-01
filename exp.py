@@ -39,7 +39,29 @@ for ax, image, label in zip(axes, digits.images, digits.target):
     ax.set_axis_off()
     ax.imshow(image, cmap=plt.cm.gray_r, interpolation="nearest")
     ax.set_title("Training: %i" % label)
+##############################################################################
+#Writing the function for train test split:
 
+
+def split_train_dev_test(X, y, test_size, dev_size):
+    # Split data into train, development, and test sets
+    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=test_size, 
+shuffle=False)
+    X_dev, X_test, y_dev, y_test = train_test_split(X_temp, y_temp, test_size=dev_size, 
+shuffle=False)
+    
+    return X_train, X_dev, X_test, y_train, y_dev, y_test
+
+##############################################################################
+def predict_and_eval(model, X_test, y_test):
+    # Getting model predictions on the test set
+    predicted_test = model.predict(X_test)
+
+    # Evaluate the model on the test set
+    classification_report = metrics.classification_report(y_test, predicted_test)
+    confusion_matrix = metrics.confusion_matrix(y_test, predicted_test)
+    
+    return classification_report, confusion_matrix
 ###############################################################################
 # Classification
 # --------------
@@ -59,19 +81,18 @@ for ax, image, label in zip(axes, digits.images, digits.target):
 n_samples = len(digits.images)
 data = digits.images.reshape((n_samples, -1))
 
+# Split data into train, development, and test sets using the new function
+X_train, X_dev, X_test, y_train, y_dev, y_test = split_train_dev_test(data, digits.target, 
+test_size=0.4, dev_size=0.25)
+
 # Create a classifier: a support vector classifier
 clf = svm.SVC(gamma=0.001)
-
-# Split data into 50% train and 50% test subsets
-X_train, X_test, y_train, y_test = train_test_split(
-    data, digits.target, test_size=0.5, shuffle=False
-)
-
 # Learn the digits on the train subset
 clf.fit(X_train, y_train)
 
-# Predict the value of the digit on the test subset
-predicted = clf.predict(X_test)
+#Use the predict_and_eval function to evaluate the model on the test set
+classification_report, confusion_matrix = predict_and_eval(clf, X_test, y_test)
+
 
 ###############################################################################
 # Below we visualize the first 4 test samples and show their predicted
