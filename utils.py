@@ -7,9 +7,9 @@ from sklearn.metrics import accuracy_score
 
 def read_digits():
     digits=datasets.load_digits()
-    x = digits.images
+    X = digits.images
     y = digits.target 
-    return x,y
+    return X,y
 
 
 
@@ -30,7 +30,7 @@ def split_train_dev_test(X, y, test_size, dev_size):
     X_train, X_dev, y_train, y_dev = split_data(X_train, y_train, test_size=dev_size)
     return X_train, X_test,X_dev, y_train, y_test, y_dev
 
-def train_model(x,y,model_params,model_type="svm"):
+def train_model(X,y,model_params,model_type="svm"):
     if model_type == 'svm':
         clf = svm.SVC(**model_params)
     clf.fit(X, y)
