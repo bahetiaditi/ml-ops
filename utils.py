@@ -15,7 +15,7 @@ def get_all_h_param_comb(gamma_list,c_list):
     return list(itertools.product(gamma_list, c_list))
 
 
-## function for data preprocessing
+#create function for data preprocessing
 def data_preprocess(data):
     # flatten the images
     n_samples = len(data)
