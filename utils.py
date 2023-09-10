@@ -41,21 +41,7 @@ def train_model(x, y, model_params, model_type='svm'):
     return model 
 
 
-def tune_hparams(X_train, y_train, X_dev, y_dev, all_combos,metric):
-    best_accuracy = -1
-    best_model=None
-    best_hparams = None
-
-    for param in all_combos:
-        cur_model = train_model(X_train,y_train,{'gamma':param[0],'C':param[1]},model_type='svm')
-        dev_pred = p_and_eval(cur_model,X_dev,y_dev)
-        val_accuracy = metric(y_pred=dev_pred, y_true=y_dev)
-        if val_accuracy > best_accuracy:
-            best_accuracy = val_accuracy
-            best_hparams=param
-            best_model = cur_model
-        
-        return best_hparams, best_model, best_accuracy     
+   
 
 
 def split_train_dev_test(X, y, test_size, dev_size):
