@@ -1,45 +1,108 @@
+# Import datasets, classifiers and performance metrics
 import matplotlib.pyplot as plt
-from sklearn import svm,datasets
+import itertools
+from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
-from sklearn import metrics
-from sklearn.metrics import accuracy_score
-
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 
 def read_digits():
-    digits=datasets.load_digits()
-    X = digits.images
-    y = digits.target 
-    return X,y
+    data = datasets.load_digits()
+    X = data.images
+    y = data.target
+    return X, y
+
+def get_all_h_param_comb(gamma_list,c_list):
+    return list(itertools.product(gamma_list, c_list))
 
 
+## function for data preprocessing
+def data_preprocess(data):
+    # flatten the images
+    n_samples = len(data)
+    data = data.reshape((n_samples, -1))
+    return data 
 
-def preprocess_digits(dataset):
-    n_samples = len(dataset)
-    data = dataset.reshape((n_samples, -1))
-    return data
+ 
+## Function for splitting data
+def split_dataset(X, y, test_size, random_state = 1):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, shuffle=False, random_state=random_state)
 
-def split_data(X,y,test_size=0.5,random_state=1):
-    X_train, X_test, y_train, y_test = train_test_split(
-     X, y, test_size=test_size, shuffle=False
-    )
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, y_train, y_test 
+
+
+## Function for training model
+def train_model(x, y, model_params, model_type='svm'):
+    if model_type == 'svm':
+        clf = svm.SVC
+
+    model = clf(**model_params)
+    # pdb.set_trace()
+    model.fit(x, y)
+    return model 
+
+
+def tune_hparams(X_train, y_train, X_dev, y_dev, all_combos,metric):
+    best_accuracy = -1
+    best_model=None
+    best_hparams = None
+
+    for param in all_combos:
+        cur_model = train_model(X_train,y_train,{'gamma':param[0],'C':param[1]},model_type='svm')
+        dev_pred = p_and_eval(cur_model,X_dev,y_dev)
+        val_accuracy = metric(y_pred=dev_pred, y_true=y_dev)
+        if val_accuracy > best_accuracy:
+            best_accuracy = val_accuracy
+            best_hparams=param
+            best_model = cur_model
+        
+        return best_hparams, best_model, best_accuracy     
 
 
 def split_train_dev_test(X, y, test_size, dev_size):
-    X_train, X_test, y_train, y_test = split_data(X, y, test_size=test_size)
-    X_train, X_dev, y_train, y_dev = split_data(X_train, y_train, test_size=dev_size)
-    return X_train, X_test,X_dev, y_train, y_test, y_dev
-
-def train_model(X,y,model_params,model_type="svm"):
-    if model_type == 'svm':
-        clf = svm.SVC(**model_params)
-    clf.fit(X, y)
-    return clf
-
-
-def predict_and_eval(model, X_test, y_test):
-    # Getting model predictions on the test set
-    predicted = model.predict(X_test)
-    return metrics.accuracy_score(y_test,predicted),predicted
-
+    # Split data into test and temporary (train + dev) sets
+    X_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=test_size, shuffle=False)
     
+    # Calculate the ratio between dev and temp sizes
+    dev_ratio = dev_size / (1 - test_size)
+    
+    # Split temporary data into train and dev sets
+    X_train, X_dev, y_train, y_dev = train_test_split(X_temp, y_temp, test_size=dev_ratio, shuffle=False)
+    
+    return X_train, X_test, X_dev, y_train, y_test, y_dev
+
+def p_and_eval(model, X_test, y_test):
+    # Predict the values using the model
+    predicted = model.predict(X_test)
+
+    # Visualize the first 4 test samples and show their predicted digit value in the title.
+    # _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
+    # for ax, image, prediction in zip(axes, X_test[:4], predicted[:4]):
+    #     ax.set_axis_off()
+    #     image = image.reshape(8, 8)
+    #     ax.imshow(image, cmap=plt.cm.gray_r, interpolation="nearest")
+    #     ax.set_title(f"Prediction: {prediction}")
+
+    # plt.show()
+
+    # # Print the classification report
+    # print(f"Classification report for classifier {model}:\n{classification_report(y_test, predicted)}\n")
+
+    # # Plot the confusion matrix
+    # disp = ConfusionMatrixDisplay.from_estimator(model, X_test, y_test)
+    # disp.figure_.suptitle("Confusion Matrix")
+    # print(f"Confusion matrix:\n{disp.confusion_matrix}\n")
+
+    # Rebuild the classification report from the confusion matrix
+    # y_true = []
+    # y_pred = []
+    # cm = disp.confusion_matrix
+
+    # for gt in range(len(cm)):
+    #     for pred in range(len(cm)):
+    #         y_true += [gt] * cm[gt][pred]
+    #         y_pred += [pred] * cm[gt][pred]
+
+    # print("Classification report rebuilt from confusion matrix:\n"
+    #       f"{classification_report(y_true, y_pred)}\n")
+    
+    return predicted
