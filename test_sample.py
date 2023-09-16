@@ -19,7 +19,9 @@ def test_for_hparam_combinations_values():
     h_params_combinations = get_all_h_param_comb(h_params)
 
     expected_param_combo_1 = {'gamma':0.001,'C':1}
+    expected_param_combo_2 = {'gamma':0.001,'C':1}
 
 
-    assert expected_param_combo_1 in h_params_combinations
+
+    assert (expected_param_combo_1 in h_params_combinations) and (expected_param_combo_2 in h_params_combinations)
 
