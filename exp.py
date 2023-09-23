@@ -63,6 +63,17 @@ all_combos = get_all_h_param_comb(gamma_list,c_list)
 
 h_metric = metrics.accuracy_score
 
+# Load the digits dataset
+digits = datasets.load_digits()
+
+# Print the number of total samples in the dataset
+total_samples = len(digits.images)
+print(f"Number of total samples in the dataset: {total_samples}")
+
+# Get the height and width of the images in the dataset
+image_height, image_width = digits.images[0].shape
+print(f"Size (height x width) of the images in the dataset: {image_height} x {image_width}")
+
 ## Split data 
 X, y = read_digits()
 # X_train, X_test, y_train, y_test = split_dataset(X, y, test_size=0.3)
