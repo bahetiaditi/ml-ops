@@ -24,3 +24,4 @@ jobs:
         run:  pip3 install --no-cache-dir -r requirements.txt
       - name: Run experiment
         run: python exp.py
+      - run : echo "Question 1 of assignment 2 completed."
