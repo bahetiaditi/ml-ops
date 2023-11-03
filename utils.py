@@ -1,5 +1,5 @@
 from sklearn.model_selection import train_test_split
-from sklearn import svm, datasets, metrics
+from sklearn import svm, datasets, metrics, tree
 from joblib import dump, load
 # we will put all utils here
 
@@ -64,6 +64,8 @@ def train_model(x, y, model_params, model_type="svm"):
     if model_type == "svm":
         # Create a classifier: a support vector classifier
         clf = svm.SVC
+    if model_type == "tree":
+        clf = tree.DecisionTreeClassifier
     model = clf(**model_params)
     # train the model
     model.fit(x, y)
