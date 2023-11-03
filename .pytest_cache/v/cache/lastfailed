@@ -1,1 +1,3 @@
-{}
+{
+  "test_utils.py::test_model_saving": true
+}
