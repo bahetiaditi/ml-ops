@@ -13,6 +13,7 @@ hand-written digits, from 0-9.
 
 # Standard scientific Python imports
 import matplotlib.pyplot as plt
+import cv2
 
 # Import datasets, classifiers and performance metrics
 from sklearn import datasets, metrics, svm
@@ -62,6 +63,17 @@ c_list = [0.1, 0.2, 0.5, 0.7, 1, 2, 5, 7, 10]
 all_combos = get_all_h_param_comb(gamma_list,c_list)
 
 h_metric = metrics.accuracy_score
+
+# Load the digits dataset
+digits = datasets.load_digits()
+
+# Print the number of total samples in the dataset
+total_samples = len(digits.images)
+print(f"Number of total samples in the dataset: {total_samples}")
+
+# Get the height and width of the images in the dataset
+image_height, image_width = digits.images[0].shape
+print(f"Size (height x width) of the images in the dataset: {image_height} x {image_width}")
 
 ## Split data 
 X, y = read_digits()
@@ -134,7 +146,10 @@ X, y = read_digits()
 
 test_sizes = [0.1, 0.2, 0.3]
 dev_sizes = [0.1, 0.2, 0.3]
+image_sizes = [4, 6, 8]
 
+
+"""
 for test_s in test_sizes:
     for dev_s in dev_sizes:
         train_size = 1 - test_s - dev_s
@@ -148,3 +163,33 @@ for test_s in test_sizes:
         
         print(f"test_size={test_s} dev_size={dev_s} train_size={train_size} train_acc={best_accuracy:.2f} dev_acc={best_accuracy:.2f} test_acc={best_accuracy:.2f}")
         print(f"Best Hyperparameters: ( gamma : {best_hparams[0]} , C : {best_hparams[1]} )")
+""" 
+
+for image_size in image_sizes:
+    # Resize the images to the specified size
+    X_resized = [cv2.resize(image, (image_size, image_size)) for image in X]
+
+    # Split data
+    X_train, X_test, X_dev, y_train, y_test, y_dev = split_train_dev_test(X_resized, y, test_size=0.2, dev_size=0.1)
+
+    # Preprocess the data
+    X_train = data_preprocess(X_train)
+    X_dev = data_preprocess(X_dev)
+    X_test = data_preprocess(X_test)
+
+    # Tune hyperparameters and train the model
+    best_hparams, best_model, best_accuracy = tune_hparams(X_train, y_train, X_dev, y_dev, all_combos, h_metric)
+
+    # Evaluate the model on train, dev, and test sets
+    train_predictions = p_and_eval(best_model, X_train, y_train)
+    dev_predictions = p_and_eval(best_model, X_dev, y_dev)
+    test_predictions = p_and_eval(best_model, X_test, y_test)
+
+    # Calculate accuracies
+    train_accuracy = h_metric(train_predictions, y_train)
+    dev_accuracy = h_metric(dev_predictions, y_dev)
+    test_accuracy = h_metric(test_predictions, y_test)
+
+    # Print the results
+    print(f"image size: {image_size}x{image_size} train_size: 0.7 dev_size: 0.1 test_size: 0.2 train_acc: {train_accuracy:.2f} dev_acc: {dev_accuracy:.2f} test_acc: {test_accuracy:.2f}")
+    print(f"Best Hyperparameters: (gamma: {best_hparams[0]}, C: {best_hparams[1]})")

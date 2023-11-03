@@ -1,6 +1,7 @@
 # Import datasets, classifiers and performance metrics
 import matplotlib.pyplot as plt
 import itertools
+import numpy as np 
 from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
@@ -17,6 +18,7 @@ def get_all_h_param_comb(gamma_list,c_list):
 
 #create function for data preprocessing
 def data_preprocess(data):
+    data = np.array(data)
     # flatten the images
     n_samples = len(data)
     data = data.reshape((n_samples, -1))
