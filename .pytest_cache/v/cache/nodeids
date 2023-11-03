@@ -1,9 +1,0 @@
-[
-  "test_sample.py::test_data_splitting",
-  "test_sample.py::test_for_hparam_combinations_count",
-  "test_sample.py::test_for_hparam_combinations_values",
-  "test_utils.py::test_data_splitting",
-  "test_utils.py::test_for_hparam_cominations_count",
-  "test_utils.py::test_for_hparam_cominations_values",
-  "test_utils.py::test_model_saving"
-]
