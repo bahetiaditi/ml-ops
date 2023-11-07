@@ -3,7 +3,7 @@ from sklearn import svm, tree, datasets, metrics
 from joblib import dump, load
 # we will put all utils here
 
-def get_combinations(param_name, param_values, base_combinations):    
+"""def get_combinations(param_name, param_values, base_combinations):    
     new_combinations = []
     for value in param_values:
         for combination in base_combinations:
@@ -36,7 +36,7 @@ def tune_hparams(X_train, y_train, X_dev, y_dev, h_params_combinations, model_ty
 
 
     return best_hparams, best_model_path, best_accuracy 
-
+"""
 
 
 def read_digits():
