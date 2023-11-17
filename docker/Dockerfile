@@ -1,19 +1,36 @@
-# FROM ubuntu:23.10
-FROM python:3.9.17
-# copy the whole code
-COPY . /digits/
+FROM python:3.10.13
 
-# RUN apt-get update
-# RUN apt-get install -y python3 python3-pip
-RUN pip3 install -r /digits/requirements.txt
-# copy the requirements.txt
-# COPY requirements.txt /requirements.tx
-# need python
-# no need fr conda or venv
-# requirements installation
-
+# Set the working directory
 WORKDIR /digits
 
-CMD ["python3","exp.py"]
+# Copy the requirements file from the root directory
+COPY requirements.txt /digits/
 
-# CMD ["pytest"]
+
+# Install dependencies
+RUN pip3 install -r requirements.txt
+
+# Copy the application code
+COPY . /digits/
+
+# Set the FLASK_APP environment variable
+ENV FLASK_APP=api/__pycache__/quiz3.py
+
+# Expose the Flask app's port
+EXPOSE 80
+
+# Start the Flask app when the container starts
+CMD ["flask", "run", "--host=0.0.0.0", "--port=80"]
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -12,6 +12,29 @@ hand-written digits, from 0-9.
 # License: BSD 3 clause
 
 # Import datasets, classifiers and performance metrics
+from flask import Flask, request, jsonify
+from joblib import load
+
+"""app = Flask(__name__)"""
+
+# Load your model (adjust the path to your model file)
+#model = load('/digits/Models/svm_gamma:0.001_C:1.joblib')
+
+"""@app.route('/predict', methods=['POST'])
+def predict():
+    # Extract data from POST request
+    data = request.json
+
+    # Preprocess and predict (customize this part as per your model)
+    processed_data = preprocess_data(data)  # Define this function based on your needs
+    prediction = model.predict(processed_data)
+
+    # Return the prediction
+    return jsonify({'prediction': prediction.tolist()})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=False)"""
+
 from sklearn import metrics, svm
 
 from utils import preprocess_data, split_data, train_model, read_digits, predict_and_eval, train_test_dev_split, get_hyperparameter_combinations, tune_hparams
