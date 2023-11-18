@@ -1,5 +1,5 @@
 # FROM ubuntu:23.10
-FROM python:3.9.17
+FROM python:3.10
 # copy the whole code
 COPY . /digits/
 
@@ -13,7 +13,8 @@ RUN pip3 install -r /digits/requirements.txt
 # requirements installation
 
 WORKDIR /digits
+ENV FLASK_APP=api/__pycache__/quiz3
 
-CMD ["python3","exp.py"]
+CMD ["flask","run","--host=0.0.0.0"]
 
 # CMD ["pytest"]
