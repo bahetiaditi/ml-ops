@@ -1,6 +1,44 @@
 import pytest
+import numpy as np
 from utils import split_train_dev_test,read_digits,preprocess_data,tune_hparams
 import os
+from api.app import app
+import json
+from utils import read_digits
+
+@pytest.fixture(scope="module")
+def digit_samples():
+    x, y = read_digits()
+    samples = {}
+    for digit in range(10):
+        sample_index = np.where(y == digit)[0][0]
+        samples[digit] = x[sample_index].reshape(1, -1)  # Reshape if necessary
+    return samples
+
+@pytest.mark.parametrize("digit, expected_prediction", [
+    (0, 0),
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, 6),
+    (7, 7),
+    (8, 8),
+    (9, 9),
+])
+
+def test_post_predict(digit_samples, digit, expected_prediction):
+    sample = digit_samples[digit]
+
+    # Sending a POST request to the /predict endpoint
+    response = app.test_client().post("/predict", json={"image": sample.tolist()})
+
+    # Check the status code and the prediction
+    assert response.status_code == 200
+    response_data = json.loads(response.get_data(as_text=True))
+    prediction = response_data['prediction'][0]
+    assert prediction == expected_prediction
 
 def inc(x):
     return x + 1
