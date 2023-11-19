@@ -21,7 +21,7 @@ jobs:
       - name: Install dep
         run:  pip3 install --no-cache-dir -r requirements.txt
       - name: Run experiment
-        run: python exp.py
+        run: python digits.py --runs 10 --test_sizes "0.2,0.3,0.5" --dev_sizes "0.1,0.2,0.3" --prod svm --candidate tree
       - name: Run pytest
         run : pytest
       - run : echo "Quiz 4"
