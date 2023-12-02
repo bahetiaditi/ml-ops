@@ -8,6 +8,8 @@ from sklearn.metrics import accuracy_score
 from joblib import dump,load
 
 from sklearn.preprocessing import normalize
+from sklearn.linear_model import LogisticRegression
+
 
 #read gigits
 def read_digits():
@@ -35,8 +37,10 @@ def split_data(X,y,test_size=0.5,random_state=1):
 def train_model(X, y, model_params,model_type = 'svm'):
     if model_type == 'svm':
         clf = svm.SVC(**model_params)
-    if model_type == 'tree':
+    elif model_type == 'tree':
         clf = tree.DecisionTreeClassifier(**model_params)
+    elif model_type == 'logistic_regression':
+        clf = LogisticRegression(**model_params)
     clf.fit(X, y)
     return clf
 
@@ -82,3 +86,17 @@ def tune_hparams(X_train, Y_train, X_dev, y_dev, list_of_all_param_combination, 
     #best_model_path = 
     return best_hparams, best_model_path, best_accuracy_so_far
 
+roll_no = "m23csa001"
+solvers = ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
+
+def evaluate_logistic_regression(X, y, solvers, roll_no):
+    performances = {}
+    for solver in solvers:
+        model = train_model(X, y, {'solver': solver}, model_type='logistic_regression')
+        accuracy, _ = predict_and_eval(model, X, y)
+        print(f"Performance with solver {solver}: {accuracy}")
+        performances[solver] = accuracy
+        model_path = f"{roll_no}_lr_{solver}.joblib"
+        dump(model, model_path)
+        # Push the model to GitHub repository (handled externally)
+    return performances
