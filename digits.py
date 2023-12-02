@@ -5,7 +5,7 @@
 
 
 # Import datasets, classifiers and performance metrics
-from utils import preprocess_data, tune_hparams, split_train_dev_test,read_digits,predict_and_eval
+from utils import preprocess_data, tune_hparams, split_train_dev_test,read_digits,predict_and_eval,evaluate_logistic_regression,cv_logistic_regression
 from joblib import load
 # import pandas as pd
 import argparse, sys
@@ -26,19 +26,14 @@ parser.add_argument("--test_sizes", help="comma sprated value of test sizes")
 parser.add_argument("--dev_sizes", help="comma sprated value of dev sizes")
 parser.add_argument("--prod", help="model to be used for production")
 parser.add_argument("--candidate", help="model to be used as candidate")
+#parser.add_argument("--model", help="specify the model to run", default="")
 
 args=parser.parse_args()
 
 max_runs = int(args.runs)  
-test_sizes = args.test_sizes.split(',')
-test_sizes = [float(i) for i in test_sizes]
-dev_sizes = args.dev_sizes.split(',')
-dev_sizes = [float(i) for i in dev_sizes]
-#models = args.models.split(',')
-# models = [str(i) for i in models] 
-models = []
-models.append(args.prod)
-models.append(args.candidate)
+test_sizes = [float(i) for i in args.test_sizes.split(',')]
+dev_sizes = [float(i) for i in args.dev_sizes.split(',')]
+models = [args.prod, args.candidate]
 
 
 #print("Total number of samples : ", len(x))
@@ -51,6 +46,8 @@ models.append(args.candidate)
 # test_sizes = [0.2]
 # dev_sizes = [0.2]
 results = []
+
+roll_no = 'm23csa001'
 
 for i in range(max_runs):
     for test_size in test_sizes:
@@ -72,6 +69,8 @@ for i in range(max_runs):
             max_depth = [5,10,15,20,50,100]
             classifer_hparam['tree'] = [{'max_depth': depth} for depth in max_depth]
 
+            classifer_hparam['logistic_regression'] = [{'solver': solver} for solver in ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']]
+
         # Predict the value of the digit on the test subset
         # 6.Predict and Evaluate 
             for model in models:
@@ -89,7 +88,10 @@ for i in range(max_runs):
         #print(f"best_gamma={best_hparams['gamma']},best_C={best_hparams['C']}")
 
 
-
+if args.prod == 'logistic_regression':
+    solvers = ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']  
+    evaluate_logistic_regression(X_train, y_train, solvers, roll_no)
+    cv_results = cv_logistic_regression(X_train, y_train, solvers)
 
 
 

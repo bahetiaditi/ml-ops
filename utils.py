@@ -9,6 +9,7 @@ from joblib import dump,load
 
 from sklearn.preprocessing import normalize
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
 
 
 #read gigits
@@ -60,12 +61,15 @@ def tune_hparams(X_train, Y_train, X_dev, y_dev, list_of_all_param_combination, 
     best_accuracy_so_far = -1
     best_model = None
     best_model_path = ""
+    best_hparams = None
 
     for param_combination in list_of_all_param_combination:
         if model_type == 'svm':
             cur_model = train_model(X_train, Y_train, {'gamma': param_combination['gamma'],'C':param_combination['C']}, model_type='svm')
         if model_type == 'tree':
             cur_model = train_model(X_train, Y_train, {'max_depth': param_combination['max_depth']}, model_type='tree')
+        if model_type == 'logistic_regression':
+            cur_model = train_model(X_train, Y_train, param_combination, model_type='logistic_regression')
 
         cur_accuracy,_ = predict_and_eval(cur_model, X_dev, y_dev)
         if cur_accuracy > best_accuracy_so_far:
@@ -77,6 +81,10 @@ def tune_hparams(X_train, Y_train, X_dev, y_dev, list_of_all_param_combination, 
             if model_type == 'tree':
                 optimal_max_depth = param_combination['max_depth']
                 best_hparams = {'max_depth': optimal_max_depth}
+            if model_type == 'logistic_regression':
+                optimal_solver = param_combination['solver']
+                best_hparams = {'solver': optimal_solver}
+            best_model = cur_model
             best_model_path = "./models/{}".format(model_type)+"_".join(["{}:{}".format(k,v) for k,v in best_hparams.items()])+".joblib"
 
             best_model = cur_model
@@ -98,5 +106,15 @@ def evaluate_logistic_regression(X, y, solvers, roll_no):
         performances[solver] = accuracy
         model_path = f"{roll_no}_lr_{solver}.joblib"
         dump(model, model_path)
-        # Push the model to GitHub repository (handled externally)
     return performances
+
+def cv_logistic_regression(X, y, solvers, cv=5):
+    cv_performances = {}
+    for solver in solvers:
+        model = LogisticRegression(solver=solver)
+        scores = cross_val_score(model, X, y, cv=cv)
+        mean_score = scores.mean()
+        std_score = scores.std()
+        cv_performances[solver] = (mean_score, std_score)
+        print(f"Solver: {solver}, Mean CV Score: {mean_score}, Std: {std_score}")
+    return cv_performances
