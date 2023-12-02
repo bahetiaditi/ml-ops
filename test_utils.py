@@ -5,6 +5,8 @@ import os
 from api.app import app
 import json
 from utils import read_digits
+from sklearn.linear_model import LogisticRegression
+from joblib import load
 
 @pytest.fixture(scope="module")
 def digit_samples():
@@ -40,7 +42,29 @@ def test_post_predict(digit_samples, digit, expected_prediction):
     prediction = response_data['prediction'][0]
     assert prediction == expected_prediction
 
+def test_logistic_regression_model_type():
+    roll_no = "m23csa001"  
+    solvers = ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
 
+    for solver in solvers:
+        model_path = f"{roll_no}_lr_{solver}.joblib"
+        assert os.path.exists(model_path), f"Model file {model_path} does not exist"
+
+        model = load(model_path)
+        assert isinstance(model, LogisticRegression), f"Loaded model is not a LogisticRegression model"
+
+def test_logistic_regression_solver_name():
+    roll_no = "m23csa001"  
+    solvers = ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
+
+    for solver in solvers:
+        model_path = f"{roll_no}_lr_{solver}.joblib"
+        assert os.path.exists(model_path), f"Model file {model_path} does not exist"
+
+        model = load(model_path)
+        model_solver = model.get_params()['solver']
+        assert model_solver == solver, f"Model solver {model_solver} does not match expected solver {solver}"
+        
 def inc(x):
     return x + 1
 
