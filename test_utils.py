@@ -40,6 +40,7 @@ def test_post_predict(digit_samples, digit, expected_prediction):
     prediction = response_data['prediction'][0]
     assert prediction == expected_prediction
 
+
 def inc(x):
     return x + 1
 
