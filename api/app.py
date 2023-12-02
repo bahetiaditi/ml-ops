@@ -14,7 +14,7 @@ def pred_model():
     image1 = js['image']
     #Assuming this is the path of our best trained model
     dirname = os.path.dirname(__file__)
-    filename = os.path.join(dirname, '../models/svmgamma:0.001_C:1.joblib')
+    filename = os.path.join(dirname, '../models/treemax_depth:100.joblib')
     model = load(filename)
     pred1 = model.predict(image1)
     #reurn pred1 in json
