@@ -21,7 +21,7 @@ jobs:
       - name: Install dep
         run:  pip3 install --no-cache-dir -r requirements.txt
       - name: Run Logistics experiment
-        run: python digits.py --runs 10 --test_sizes "0.2,0.3,0.5" --dev_sizes "0.1,0.2,0.3" --prod logistic_regression 
+        run: python digits.py --runs 10 --test_sizes "0.2,0.3,0.5" --dev_sizes "0.1,0.2,0.3" --prod logistic_regression --candidate logistic_regression
       - name: Run pytest
         run : pytest
       - run : echo "Final exam"
