@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
 from joblib import dump,load
 
+from sklearn.preprocessing import normalize
+
 #read gigits
 def read_digits():
     digits = datasets.load_digits()
@@ -18,6 +20,7 @@ def read_digits():
 def preprocess_data(data):
     n_samples = len(data)
     data = data.reshape((n_samples, -1))
+    data = normalize(data, norm='l2')
     return data
 
 # Split data into 50% train and 50% test subsets
